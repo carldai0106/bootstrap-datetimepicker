@@ -34,7 +34,7 @@
     },
     "requireMultipleVarDecl": "onevar",
     "requireBlocksOnNewline": true,
-    "disallowPaddingNewlinesInBlocks": true,
+    "disallowPaddingNewlinesInBlocks": false,
     "disallowEmptyBlocks": true,
     "disallowSpacesInsideObjectBrackets": false,
     "disallowSpacesInsideArrayBrackets": true,
@@ -55,7 +55,7 @@
     "disallowKeywords": ["with"],
     "disallowMultipleLineStrings": true,
     "validateIndentation": 4,
-    "disallowTrailingWhitespace": true,
+    "disallowTrailingWhitespace": false,
     "disallowTrailingComma": true,
     "requireLineFeedAtFileEnd": true,
     "requireCapitalizedConstructors": true

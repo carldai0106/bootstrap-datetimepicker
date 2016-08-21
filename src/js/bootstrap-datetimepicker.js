@@ -769,15 +769,16 @@
                 table.empty().append(html);
             },
 
-            fillMinutes = function () {
+            fillMinutes = function () {              
                 var table = widget.find('.timepicker-minutes table'),
                     currentMinute = viewDate.clone().startOf('h'),
                     html = [],
                     row = $('<tr>'),
-                    step = options.stepping === 1 ? 5 : options.stepping;
+                    cols = options.minuteOptions.columns,
+                    step = options.minuteOptions.interval;
 
                 while (viewDate.isSame(currentMinute, 'h')) {
-                    if (currentMinute.minute() % (step * 4) === 0) {
+                    if (currentMinute.minute() % (step * cols) === 0) {
                         row = $('<tr>');
                         html.push(row);
                     }
@@ -1472,6 +1473,18 @@
             return picker;
         };
 
+        picker.minuteOptions = function (opts) {
+            if (arguments.length === 0) {
+                return $.extend({}, options.minutesOptions);
+            }
+
+            if (!(opts instanceof Object)) {
+                throw new TypeError('icons() expects parameter to be an Object');
+            }
+            $.extend(options.minutesOptions, opts);           
+            return picker;
+        };
+
         picker.options = function (newOptions) {
             if (arguments.length === 0) {
                 return $.extend(true, {}, options);
@@ -1480,7 +1493,7 @@
             if (!(newOptions instanceof Object)) {
                 throw new TypeError('options() options parameter should be an object');
             }
-            $.extend(true, options, newOptions);
+            $.extend(true, options, newOptions);           
             $.each(options, function (key, value) {
                 if (picker[key] !== undefined) {
                     picker[key](value);
@@ -2445,6 +2458,10 @@
         defaultDate: false,
         disabledDates: false,
         enabledDates: false,
+        minuteOptions :{
+            columns : 8,
+            interval : 1
+        },
         icons: {
             time: 'glyphicon glyphicon-time',
             date: 'glyphicon glyphicon-calendar',

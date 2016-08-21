@@ -2,6 +2,34 @@ module.exports = function (grunt) {
     'use strict';
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+
+        //清除文件
+        clean: {
+            options: {
+                force: true
+            },
+            build: [
+                'build/js/*.js', 'build/css/*.css'
+            ],
+            clearAll: [
+                'build/js/*.js', 'build/css/*.css'
+            ]
+        },
+
+        //拷贝文件到指定目录
+        copy: {
+            js: {
+                files: [{
+                    expand: true,
+                    cwd: 'src/js/',
+                    src: '**',
+                    dest: 'build/js/',
+                    flatten: true,
+                    filter: 'isFile'
+                }]
+            }
+        },
+
         uglify: {
             target: {
                 files: {
@@ -11,13 +39,17 @@ module.exports = function (grunt) {
             options: {
                 mangle: true,
                 compress: {
-                    dead_code: false // jshint ignore:line
+                    dead_code: false, // jshint ignore:line
+                    warnings: false
                 },
                 output: {
                     ascii_only: true // jshint ignore:line
                 },
+                // beautify: {                    
+                //      ascii_only: true 
+                // },
                 report: 'min',
-                preserveComments: 'some'
+                preserveComments: false
             }
         },
         jshint: {
@@ -151,14 +183,19 @@ module.exports = function (grunt) {
     });
 
     grunt.loadTasks('tasks');
-
+   
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-env');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-nuget');
 
     require('load-grunt-tasks')(grunt);
-    grunt.registerTask('default', ['jshint', 'jscs', 'less', 'env:paris', 'connect', 'jasmine']);
+
+    grunt.registerTask('copy', ['copy:js']);
+
+    grunt.registerTask('default', ['clean:build', 'jshint', 'jscs','uglify', 'less',  'env:paris', 'connect', 'jasmine']);
     grunt.registerTask('build:travis', [
         // code style
         'jshint', 'jscs',
@@ -169,18 +206,21 @@ module.exports = function (grunt) {
     ]);
 
     // Task to be run when building
-    grunt.registerTask('build', ['jshint', 'jscs', 'uglify', 'less']);
+    grunt.registerTask('build', ['clean:build', 'jshint', 'jscs', 'uglify', 'less',  'copy']);
 
     grunt.registerTask('test', ['jshint', 'jscs', 'uglify', 'less', 'env:paris', 'connect', 'jasmine']);
 
     grunt.registerTask('docs', 'Generate docs', function () {
+
         grunt.util.spawn({
             cmd: 'mkdocs',
             args: ['build', '--clean']
         });
+        
     });
 
     grunt.registerTask('release', function (version) {
+
         if (!version || version.split('.').length !== 3) {
             grunt.fail.fatal('malformed version. Use grunt release:1.2.3');
         }
